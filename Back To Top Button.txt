@@ -1,0 +1,25 @@
+<!-- Back To Top Button -->
+	<!-- Step 1: Create Snippets (back-to-top.liquid) & Paste Below Code -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+	<div id="scrollToTop" onclick="scrollToTop()">
+	  <i class="fas fa-chevron-up"></i>
+	</div>
+
+	<style>
+	  #scrollToTop {position: fixed; bottom: 20px; right: 20px; width: 48px; height: 48px; font-size: 30px; text-align: center; color: #252b51; border: #252b51 1px solid; border-radius: 100px; cursor: pointer;}
+	  #scrollToTop:hover {color: #fff; border-color: #fff;}
+	</style>
+
+	<script>
+	  function scrollToTop() {
+		window.scrollTo({
+		  top: 0,
+		  behavior: 'smooth'
+		});
+	  }
+	</script>
+
+	<!-- Step 2: Layout -> (theme.liquid) & Paste Below Code Before Closing </body> Tag -->
+	{% render 'back-to-top' %}
+<!-- Back To Top Button -->
