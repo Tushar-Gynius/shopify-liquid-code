@@ -1,0 +1,6 @@
+<!-- Disable Right Click Button -->
+	<!-- Step 1: Layout -> (theme.liquid) & Paste Below Code Just Above The Closing </head> Tag -->	
+	<script>
+	  window.oncontextmenu = function() { return false; }
+	</script>
+<!-- Disable Right Click Button -->
