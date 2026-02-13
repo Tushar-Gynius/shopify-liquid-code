@@ -1,2 +1,2 @@
 # shopify-liquid-code
-Small Shopify Liquid Code With Usage Instructions
+Shopify Liquid - Small Logic Code
