@@ -1,0 +1,29 @@
+<!-- Out of Stock Products At Last On Collection Page -->
+	<!-- Step 1: Find Below Code Where All Products is Called On Collection Page -->
+	{% for product in collection.products %}
+	  <li class="grid__item grid__item--{{section.id}} {{ grid_item_width }}">
+	    {% include 'product-card-grid', max_height: max_height, product: product, show_vendor: section.settings.show_vendor %}
+	  </li>
+	{% endfor %}
+	
+	<!-- Step 2: Replace Below Code With The Above Code -->
+	<!-- Show Only Available Products On Collection Page -->
+	{% for product in collection.products %}
+	  {% if product.available %}
+	    <li class="grid__item grid__item--{{section.id}} {{ grid_item_width }}">
+		  {% include 'product-card-grid', max_height: max_height, product: product, show_vendor: section.settings.show_vendor %}
+		</li>
+	  {% endif %}
+	{% endfor %}
+	<!-- Show Only Available Products On Collection Page -->
+
+	<!-- Show Only Unavailable Products On Collection Page -->
+	{% for product in collection.products %}
+	  {% unless product.available %}
+		<li class="grid__item grid__item--{{section.id}} {{ grid_item_width }}">
+		  {% include 'product-card-grid', max_height: max_height, product: product, show_vendor: section.settings.show_vendor %}
+		</li>
+	  {% endunless %}
+	{% endfor %}
+	<!-- Show Only Unavailable Products On Collection Page -->
+<!-- Out of Stock Products At Last On Collection Page -->
