@@ -1,0 +1,37 @@
+<!-- Infinite Scrolling With Load More Button -->
+	<!-- Step 1: Find Below Code Where All Products is Called on Collection Page -->
+	<product-list id="product-list-{{ section.id }}" class="product-list" collection-mobile-layout="{{ products_mobile_grid_mode }}" collection-desktop-layout="{{ products_desktop_grid_mode }}">
+	{%- for product in collection.products -%}
+	  {%- render 'product-card', product: product, reveal: settings.stagger_products_apparition, hide_product_information: section.settings.hide_product_information, stacked: true -%}
+	{%- endfor -%}
+	</product-list>
+			  
+	<!-- Step 2: Paste Below Code Just After The Above Code -->
+	<div id="AjaxinatePagination" style="margin: auto;">
+	  {% if paginate.next %}
+		<a href="{{ paginate.next.url }}" id="load-more" style="font-size: 18px; padding: 5px 20px; color: #fff; background: #000;">Load More</a>
+	  {% else %}
+		<a href="{{ paginate.previous.url }}" id="load-less" style="font-size: 18px; padding: 5px 20px; color: #fff; background: #000; pointer-events: none;">No More Products</a>
+	  {%- endif -%}
+	</div>
+	
+	<!-- Step 3: Comment Pagination Code -->
+	{% comment %}
+	{%- render 'pagination', paginate: paginate, facet: true -%}
+	{% endcomment %}
+	
+	<!-- Step 4: Paste Below Code on Same File -->
+	<script>
+	  document.addEventListener("DOMContentLoaded", function() {
+	    var endlessScroll = new Ajaxinate({
+		  container: '#product-list-{{ section.id }}',
+		  pagination: '#AjaxinatePagination',
+		  loadingText: 'Loading...',
+		  method: 'click'
+	    });
+	  });
+	</script>
+	
+	<!-- Step 5: Layout -> (theme.liquid) & Call Below Script -->
+    <script src="{{ 'ajaxinate.js' | asset_url }}" defer></script>
+<!-- Infinite Scrolling With Load More Button -->
