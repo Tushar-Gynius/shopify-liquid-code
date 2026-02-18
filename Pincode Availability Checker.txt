@@ -1,0 +1,589 @@
+<!-- Pincode Availability Checker -->
+	<!-- Step 1: Config -> (settings_schema.json) & Add Below Code -->
+	{
+		"name": "Pincode Availability Checker",
+		"settings": [
+		  {
+			"type": "header",
+			"content": "Pincode Availability"
+		  },
+		  {
+			"type": "checkbox",
+			"id": "enable_pincode",
+			"label": "Enable Pincode Availability Checker",
+			"default": true
+		  },
+		  {
+			"type": "textarea",
+			"id": "pincode_list_1",
+			"label": "List of UP Pincode"
+		  },
+		  {
+			"type": "text",
+			"id": "pincode_msg_1",
+			"label": "UP Pincode Message",
+			"default": "Delivery will be in next 1 to 2 Days"
+		  },
+		  {
+			"type": "text",
+			"id": "delivery_date_1",
+			"label": "UP Delivery Date"
+		  },
+		  {
+			"type": "textarea",
+			"id": "pincode_list_2",
+			"label": "List of MP Pincode"
+		  },
+		  {
+			"type": "text",
+			"id": "pincode_msg_2",
+			"label": "MP Pincode Message",
+			"default": "Delivery will be in next 2 to 3 Days"
+		  },
+		  {
+			"type": "text",
+			"id": "delivery_date_2",
+			"label": "MP Delivery Date"
+		  },
+		  {
+			"type": "textarea",
+			"id": "pincode_list_3",
+			"label": "List of HP Pincode"
+		  },
+		  {
+			"type": "text",
+			"id": "pincode_msg_3",
+			"label": "HP Pincode Message",
+			"default": "Delivery will be in next 3 to 4 Days"
+		  },
+		  {
+			"type": "text",
+			"id": "delivery_date_3",
+			"label": "HP Delivery Date"
+		  },
+		  {
+			"type": "textarea",
+			"id": "pincode_list_4",
+			"label": "List of Delhi Pincode"
+		  },
+		  {
+			"type": "text",
+			"id": "pincode_msg_4",
+			"label": "Delhi Pincode Message",
+			"default": "Delivery will be in next 4 to 5 Days"
+		  },
+		  {
+			"type": "text",
+			"id": "delivery_date_4",
+			"label": "Delhi Delivery Date"
+		  }
+		]
+	},
+
+	<!-- Step 2: Create Assets (pincode-checker.js.liquid) & Paste Below Code -->
+	{%- assign pincode_list_1 = settings.pincode_list_1 | strip_newlines | strip | split: ',' -%} 
+	{%- assign pincode_list_2 = settings.pincode_list_2 | strip_newlines | strip | split: ',' -%}
+	{%- assign pincode_list_3 = settings.pincode_list_3 | strip_newlines | strip | split: ',' -%}
+	{%- assign pincode_list_4 = settings.pincode_list_4 | strip_newlines | strip | split: ',' -%}
+	{%- assign pincode_enable = settings.enable_pincode | default: false -%}
+
+	var pincodeList_1 = {{ pincode_list_1 | json }};
+	var pincodeList_2 = {{ pincode_list_2 | json }};
+	var pincodeList_3 = {{ pincode_list_3 | json }};
+	var pincodeList_4 = {{ pincode_list_4 | json }};
+	var pincodeEnable = {{ pincode_enable }};
+
+	<!-- Step 3: Layout -> (theme.liquid) & Call Below Script -->
+	<script src="{{ 'pincode-checker.js' | asset_url }}"></script>
+
+	<!-- Step 4: Layout -> (theme.liquid) & Paste Below Code Just After {% section 'header' %} -->
+	{% render 'pincode-popup' %}
+
+	<!-- Step 5: Sections -> (header.liquid) & Paste Below Code Where You Want -->
+	<div class="header_pincode">
+	  {% render 'pincode-validator', st: section.id %}
+	</div>
+
+	<!-- Step 6: Sections -> (main-product.liquid) & Paste Below Code Where You Want -->
+	<div class="product_pincode">
+	  {% render 'pincode-validator', st: section.id %}
+	</div>
+
+	<!-- Step 7: Create Snippets (pincode-validator.liquid) & Paste Below Code -->
+	{% if settings.enable_pincode %}
+	  <div class="{{st}}_pincode-validation">
+		{% if st == 'popup' %}
+		  <div class="popup-pincode-msg">Enter Pincode To See Product Availability in Your Location</div>
+		{% endif %}
+	  
+		<div class="pincode-validator">
+		  {% if st == 'header' %}  
+			<span class="location-icon hdrpin">
+			  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 477 477" style="enable-background:new 0 0 477 477;" xml:space="preserve">                
+				<g><g>
+				  <path d="M238.4,0C133,0,47.2,85.8,47.2,191.2c0,12,1.1,24.1,3.4,35.9c0.1,0.7,0.5,2.8,1.3,6.4c2.9,12.9,7.2,25.6,12.8,37.7    c20.6,48.5,65.9,123,165.3,202.8c2.5,2,5.5,3,8.5,3s6-1,8.5-3c99.3-79.8,144.7-154.3,165.3-202.8c5.6-12.1,9.9-24.7,12.8-37.7    c0.8-3.6,1.2-5.7,1.3-6.4c2.2-11.8,3.4-23.9,3.4-35.9C429.6,85.8,343.8,0,238.4,0z M399.6,222.4c0,0.2-0.1,0.4-0.1,0.6    c-0.1,0.5-0.4,2-0.9,4.3c0,0.1,0,0.1,0,0.2c-2.5,11.2-6.2,22.1-11.1,32.6c-0.1,0.1-0.1,0.3-0.2,0.4    c-18.7,44.3-59.7,111.9-148.9,185.6c-89.2-73.7-130.2-141.3-148.9-185.6c-0.1-0.1-0.1-0.3-0.2-0.4c-4.8-10.4-8.5-21.4-11.1-32.6    c0-0.1,0-0.1,0-0.2c-0.6-2.3-0.8-3.8-0.9-4.3c0-0.2-0.1-0.4-0.1-0.7c-2-10.3-3-20.7-3-31.2c0-90.5,73.7-164.2,164.2-164.2    s164.2,73.7,164.2,164.2C402.6,201.7,401.6,212.2,399.6,222.4z"></path>                    
+				  <path d="M238.4,71.9c-66.9,0-121.4,54.5-121.4,121.4s54.5,121.4,121.4,121.4s121.4-54.5,121.4-121.4S305.3,71.9,238.4,71.9z     M238.4,287.7c-52.1,0-94.4-42.4-94.4-94.4s42.4-94.4,94.4-94.4s94.4,42.4,94.4,94.4S290.5,287.7,238.4,287.7z"></path>                  
+				</g></g> 
+			  </svg>
+			</span>
+		  {% endif %}
+	  
+		  <span>Delivery To:</span>
+		  <input type="text" class="{{class}} pincode-1" placeholder="Enter PIN" maxlength="6" pattern="[1-9][0-9]{5}" onkeyup="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')"/>
+		  <button class="pin-validate-btn" type="button"> 
+			<span>Proceed</span>
+		  </button>
+		</div>
+		<div class="pin_msg" style="display: none; color: red; line-height: 1.2;">Apologies, we do not currently service your location. We will be there soon!</div>
+	  </div>
+
+	  {% assign days1 = settings.delivery_date_1 | times: 86400 %}
+	  {% assign newDate1 = 'now' | date: '%s'| plus: days1 %}   
+
+	  {% assign days2 = settings.delivery_date_2 | times: 86400 %}
+	  {% assign newDate2 = 'now' | date: '%s'| plus: days2 %} 
+
+	  {% assign days3 = settings.delivery_date_3 | times: 86400 %}
+	  {% assign newDate3 = 'now' | date: '%s'| plus: days3 %} 
+	  
+	  {% assign days4 = settings.delivery_date_4 | times: 86400 %}
+	  {% assign newDate4 = 'now' | date: '%s'| plus: days4 %} 
+	  
+	  <p class="cstm-msg cstm-msg1" style="display: none;">{{ settings.pincode_msg_1 }} {{ newDate1 | date: format: 'date' }}</p>
+	  <p class="cstm-msg cstm-msg2" style="display: none;">{{ settings.pincode_msg_2 }} {{ newDate2 | date: format: 'date' }}</p>
+	  <p class="cstm-msg cstm-msg3" style="display: none;">{{ settings.pincode_msg_3 }} {{ newDate3 | date: format: 'date' }}</p>
+	  <p class="cstm-msg cstm-msg4" style="display: none;">{{ settings.pincode_msg_4 }} {{ newDate4 | date: format: 'date' }}</p>
+	{% endif %}
+
+	<!-- Step 8: Create Snippets (pincode-popup.liquid) & Paste Below Code -->
+	{% if settings.enable_pincode %}
+	  <div class="popup-pincode pincode-validation">
+		<div class="modal-content popup-pincode-inner">
+		  <span class="close"><svg class="{{ icon_class }}" role="presentation" viewBox="0 0 16 14" style="height: 12px;"><path d="M15 0L1 14m14 0L1 0" stroke="currentColor" fill="none" fill-rule="evenodd"></path></svg></span>
+		  {% render 'pincode-validator', st: "popup" %}
+		</div>
+	  </div>
+	{% endif %}
+
+	<!-- Step 9: Add CSS -->
+	.header_pincode {text-align: center;}
+	.location-icon svg {height: 18px; vertical-align: middle;}
+	.popup-pincode {position: fixed; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 11;}
+	.modal-content {position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background: #4edf74; border-radius: 5px; text-align: center; line-height: 1.2;}
+	.close {position: absolute; top: 10px; right: 10px; cursor: pointer;}
+	.popup_pincode-validation, .pincode-validator {margin: 10px 0;}
+	.popup-pincode-msg {font-size: 16px; font-weight: bold;}
+	.cstm-msg {margin: 0; font-weight: bold;}
+	.cstm-msg.active, .pin_msg.active {display: none !important;}
+	@media only screen and (max-width: 576px) {.modal-content {width: 100%;}}
+
+	<!-- Step 10: Add JS -->
+	$(document).ready(function(){
+	  var closePopup = localStorage.getItem("closePop");
+	  if(window.theme.pincodeEnable){
+		var ExistPincode = localStorage.getItem('ExistPincode');
+		var PinMsg = localStorage.getItem('PinMsg');
+		if(ExistPincode){
+		  $('.pincode-1').val(ExistPincode);
+		  $('.pin-validate-btn span').text("Change");
+		  $('.pin_msg').text(PinMsg).css('color','#fff');
+		}
+		
+		const pin_list_1 = window.theme.pincodeList_1;
+		const pin_list_2 = window.theme.pincodeList_2;  
+		const pin_list_3 = window.theme.pincodeList_3;
+		const pin_list_4 = window.theme.pincodeList_4; 
+		
+		$('.pin-validate-btn').click(function(i){
+		  $('.dis_error-msg').hide();
+		  var popup_open = $('.popup-pincode').css('display');
+		  if (popup_open == "block"){
+			var pin_1 = $('.popup-pincode-inner .pincode-1');
+			var pincode_1 =  pin_1.val();
+		  }else{
+			var pin_1 = $(this).parent('.pincode-validator').find('input.pincode-1');
+			var pincode_1 = pin_1.val();
+		  } 
+		  
+		  if (/^(\d{6})$/.test(pincode_1)) {
+			if ( $.inArray(pincode_1, pin_list_1) > -1) {
+			  localStorage.setItem('ExistPincode', pincode_1);
+			  localStorage.setItem('storepincode', pincode_1);
+			  $('.pincode-1').attr('placeholder', 'Enter PIN').css('color','#02397f');
+			  if (popup_open == "block"){
+				setTimeout(function(){$('.popup-pincode').hide();},500);
+			  }
+			  $('.pincode-1').val(pincode_1);
+			  $('.pin-validate-btn span').text("Change");
+			  $('.cstm-msg').addClass('active');
+			  $('.cstm-msg1').removeClass('active');
+			  $('.cstm-msg1').show();
+			  $('.pin_msg').hide();
+			}else if ($.inArray(pincode_1, pin_list_2) > -1){
+			  localStorage.setItem('ExistPincode', pincode_1);
+			  localStorage.setItem('storepincode', pincode_1);
+			  $('.pincode-1').attr('placeholder', 'Enter PIN').css('color','#02397f');
+			  if (popup_open == "block"){
+				setTimeout(function(){$('.popup-pincode').hide();},500);
+			  }
+			  $('.pincode-1').val(pincode_1);
+			  $('.pin-validate-btn span').text("Change");
+			  $('.cstm-msg').addClass('active');
+			  $('.cstm-msg2').removeClass('active');
+			  $('.cstm-msg2').show();
+			  $('.pin_msg').hide();
+			}else if ($.inArray(pincode_1, pin_list_3) > -1){
+			  localStorage.setItem('ExistPincode', pincode_1);
+			  localStorage.setItem('storepincode', pincode_1);
+			  $('.pincode-1').attr('placeholder', 'Enter PIN').css('color','#02397f');
+			  if (popup_open == "block"){
+				setTimeout(function(){$('.popup-pincode').hide();},500);
+			  }
+			  $('.pincode-1').val(pincode_1);
+			  $('.pin-validate-btn span').text("Change");
+			  $('.cstm-msg').addClass('active');
+			  $('.cstm-msg3').removeClass('active');
+			  $('.cstm-msg3').show();
+			  $('.pin_msg').hide();
+			}else if ($.inArray(pincode_1, pin_list_4) > -1){
+			  localStorage.setItem('ExistPincode', pincode_1);
+			  localStorage.setItem('storepincode', pincode_1);
+			  $('.pincode-1').attr('placeholder', 'Enter PIN').css('color','#02397f');
+			  if (popup_open == "block"){
+				setTimeout(function(){$('.popup-pincode').hide();},500);
+			  }
+			  $('.pincode-1').val(pincode_1);
+			  $('.pin-validate-btn span').text("Change");
+			  $('.cstm-msg').addClass('active');
+			  $('.cstm-msg4').removeClass('active');
+			  $('.cstm-msg4').show();
+			  $('.pin_msg').hide();
+			}else{
+			  $('.pin-validate-btn span').text("Submit");
+			  localStorage.setItem('ExistPincode', '');
+			  localStorage.setItem('storepincode', '');
+			  localStorage.setItem('PinMsg', '');
+			  $('.cstm-msg').hide();
+			  $('.pin_msg').show();
+			}
+		  } else {
+			pin_1.focus().attr('placeholder', 'Invalid PIN').css('color','red'); $('.pincode-1').val('');
+			localStorage.setItem('PinMsg', '');
+			$('.pin_msg').text('');
+			$('.pin-validate-btn span').text("Submit");
+			localStorage.setItem('ExistPincode', '');
+			localStorage.setItem('storepincode', '');
+			return false;
+		  }
+		  
+		  $('input.pincode-1').keyup(function(event) {
+			var hide_msg = $(this).val().length;
+			if(hide_msg < 6) {
+			  $('.cstm-msg, .pin_msg').hide();
+			}
+		  });
+		  
+		  $("input.pincode-1").focus(function(){
+			$('.cstm-msg, .pin_msg').hide();
+		  });
+		}); 
+		
+		$('.hdrpin').click(function(evt){$('.popup-pincode').show();});
+		$('.popup-pincode-inner .close').on('click', function(){
+		  var closePopup = localStorage.setItem("closePop",'true');
+		  $('.popup-pincode').hide();
+		});
+		if((closePopup == "true") || (ExistPincode)){
+		  $('.popup-pincode').hide();
+		}  
+	  }
+	});
+<!-- Pincode Availability Checker -->
+
+<!-- Pincode Availability Checker with API To Print Pincode, City & Country with Loader -->
+	<!-- Create Snippets (pincode-validator.liquid) & Paste Below Code -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	{% if settings.enable_pincode %}
+	  <div class="pincode-validation product-pins"> 
+		<div class="pin-btn-hide">
+		  <span class="eta-msg">Check Estimated Delivery Time</span>
+		  <div class="pincode-validator">  
+			<input type="text" class="{{class}} pin pincode pincode-1" placeholder="Enter your shipping pincode" maxlength="6" pattern="[1-9][0-9]{5}" onkeyup="if (/\D/g.test(this.value)) this.value = this.value.replace(/\D/g,'')"/>
+			<button class="pincode-validate-btn" type="button"> 
+			  <span><strong>CHECK</strong></span>
+			</button>
+		  </div>
+		</div>
+		<div class="pin_err_msg" style="display: none;">
+		  <i class="fa fa-map-marker" aria-hidden="true" style="color: #1F6100; font-size: 20px;"></i>
+		  <span class="wrong-pin"></span>
+		  <button class="change-btn">Change</button><br>
+		  <span style="color: red; line-height: 1.2;">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12px" height="12px"><title>cross</title><path d="M3 0L0 3l9 9-9 9 3 3 9-9 9 9 3-3-9-9 9-9-3-3-9 9z" fill="#fc0006"></path></svg>
+			Apologies, we do not currently service your location. We will be there soon!
+		  </span>
+		</div>
+	  </div>
+
+	  {% assign days1 = settings.delivery_date_1 | times: 86400 %}
+	  {% assign newDate1 = 'now' | date: '%s'| plus: days1 %}   
+
+	  {% assign days2 = settings.delivery_date_2 | times: 86400 %}
+	  {% assign newDate2 = 'now' | date: '%s'| plus: days2 %} 
+
+	  {% assign days3 = settings.delivery_date_3 | times: 86400 %}
+	  {% assign newDate3 = 'now' | date: '%s'| plus: days3 %} 
+	  
+	  {% assign days4 = settings.delivery_date_4 | times: 86400 %}
+	  {% assign newDate4 = 'now' | date: '%s'| plus: days4 %} 
+
+	  <i class="fa fa-spinner fa-spin" id="loader-spin" style="display: none; color: #1F6100; font-size: 24px"></i>
+	  <p class="cstm-msg cstm-msg1" style="display: none;">
+		<i class="fa fa-map-marker" aria-hidden="true" style="color: #1F6100; font-size: 20px;"></i>
+		<span class="display-pincode"></span>
+		<button class="change-btn">Change</button><br>
+		<span class="city-country"></span><br>
+		<i class="fa fa-check" style="color: #1F6100; font-size: 20px;"></i>
+		<span style="color: #1F6100;">{{ settings.pincode_msg_1 }} <span style="font-weight: bold;">{{ newDate1 | date: format: 'date' }}</span></span>
+	  </p>
+	  
+	  <p class="cstm-msg cstm-msg2" style="display: none;">
+		<i class="fa fa-map-marker" aria-hidden="true" style="color: #1F6100; font-size: 20px;"></i>
+		<span class="display-pincode"></span>
+		<button class="change-btn">Change</button><br>
+		<span class="city-country"></span><br>
+		<i class="fa fa-check" style="color: #1F6100; font-size: 20px;"></i>
+		<span style="color: #1F6100;">{{ settings.pincode_msg_2 }} <span style="font-weight: bold;">{{ newDate2 | date: format: 'date' }}</span></span>
+	  </p>
+	  
+	  <p class="cstm-msg cstm-msg3" style="display: none;">
+		<i class="fa fa-map-marker" aria-hidden="true" style="color: #1F6100; font-size: 20px;"></i>
+		<span class="display-pincode"></span>
+		<button class="change-btn">Change</button><br>
+		<span class="city-country"></span><br>
+		<i class="fa fa-check" style="color: #1F6100; font-size: 20px;"></i>
+		<span style="color: #1F6100;">{{ settings.pincode_msg_3 }} <span style="font-weight: bold;">{{ newDate3 | date: format: 'date' }}</span></span>
+	  </p>
+	  
+	  <p class="cstm-msg cstm-msg4" style="display: none;">
+		<i class="fa fa-map-marker" aria-hidden="true" style="color: #1F6100; font-size: 20px;"></i>
+		<span class="display-pincode"></span>
+		<button class="change-btn">Change</button><br>
+		<span class="city-country"></span><br>
+		<i class="fa fa-check" style="color: #1F6100; font-size: 20px;"></i>
+		<span style="color: #1F6100;">{{ settings.pincode_msg_4 }} <span style="font-weight: bold;">{{ newDate4 | date: format: 'date' }}</span></span>
+	  </p>
+	{% endif %}
+
+	<!-- Add CSS -->
+	.product_page_pin {margin: 10px 0 20px 0;}
+	.pincode-validation {margin: 0;}
+	.eta-msg {font-weight: bold; font-size: 18px;}
+	.pincode-validator {display: flex; margin: 10px 0;}
+	.pincode-validator input {border: 1px solid #1F6100; border-top-left-radius: 5px; border-bottom-left-radius: 5px; padding: 10px !important; flex-grow: 1;}
+	.pincode-validator button.pincode-validate-btn {background: #1F6100; border: 1px solid #1F6100; cursor: pointer; border-top-right-radius: 5px; border-bottom-right-radius: 5px; color: #fff; padding: 10px 15px;}
+	.pin_err_msg {margin: 5px 0;}
+	.wrong-pin, .city-country, .display-pincode {color: #1F6100;}
+	.change-btn {border: 1px solid #1F6100; color: #1F6100; background: #fff; padding: 0 10px; font-weight: 600;}
+	.cstm-msg {line-height: 2;}
+	.cstm-msg.active, .pin_err_msg.active {display: none !important;}
+
+	<!-- Add JS -->
+	$(document).ready(function() {
+	  if(window.theme.pincodeEnable){
+		var ExistPincode = localStorage.getItem('ExistPincode');
+		var PinMsg = localStorage.getItem('PinMsg');
+		
+		const pin_list_1 = window.theme.pincodeList_1;
+		const pin_list_2 = window.theme.pincodeList_2;  
+		const pin_list_3 = window.theme.pincodeList_3;
+		const pin_list_4 = window.theme.pincodeList_4;
+		
+		$('.pincode-validate-btn').click(function(i){
+		  var pin_11 = $(this).parent('.pincode-validator').find('input.pincode-1');
+		  var pincode_11 = pin_11.val();
+		 
+		<!-- $('input.pincode-1').on('input', function() {
+		  var pincode_11 = $(this).val(); (Replace Above 3 Lines of Code With This For Without Button Click) -->
+		  
+		  if (/^(\d{6})$/.test(pincode_11)) {
+			if ($.inArray(pincode_11, pin_list_1) > -1) {
+			  localStorage.setItem('ExistPincode', pincode_11);
+			  localStorage.setItem('storepincode', pincode_11);
+			  $('.pincode-1').attr('placeholder', 'Enter your shipping pincode').css('color','#02397f');
+			  $('.pincode-1').val(pincode_11);
+			  $('.cstm-msg').addClass('active');
+			  $('.cstm-msg1').removeClass('active');
+			  setTimeout(function() {
+				$('.cstm-msg1').show();
+			  }, 2000);
+			  $('.pin_err_msg').hide();
+			}else if ($.inArray(pincode_11, pin_list_2) > -1){
+			  localStorage.setItem('ExistPincode', pincode_11);
+			  localStorage.setItem('storepincode', pincode_11);
+			  $('.pincode-1').attr('placeholder', 'Enter your shipping pincode').css('color','#02397f');
+			  $('.pincode-1').val(pincode_11);
+			  $('.cstm-msg').addClass('active');
+			  $('.cstm-msg2').removeClass('active');
+			  setTimeout(function() {
+				$('.cstm-msg2').show();
+			  }, 2000);
+			  $('.pin_err_msg').hide();
+			}else if ($.inArray(pincode_11, pin_list_3) > -1){
+			  localStorage.setItem('ExistPincode', pincode_11);
+			  localStorage.setItem('storepincode', pincode_11);
+			  $('.pincode-1').attr('placeholder', 'Enter your shipping pincode').css('color','#02397f');
+			  $('.pincode-1').val(pincode_11);
+			  $('.cstm-msg').addClass('active');
+			  $('.cstm-msg3').removeClass('active');
+			  setTimeout(function() {
+				$('.cstm-msg3').show();
+			  }, 2000);
+			  $('.pin_err_msg').hide();
+			}else if ($.inArray(pincode_11, pin_list_4) > -1){
+			  localStorage.setItem('ExistPincode', pincode_11);
+			  localStorage.setItem('storepincode', pincode_11);
+			  $('.pincode-1').attr('placeholder', 'Enter your shipping pincode').css('color','#02397f');
+			  $('.pincode-1').val(pincode_11);
+			  $('.cstm-msg').addClass('active');
+			  $('.cstm-msg4').removeClass('active');
+			  setTimeout(function() {
+				$('.cstm-msg4').show();
+			  }, 2000);
+			  $('.pin_err_msg').hide();
+			}else{
+			  localStorage.setItem('ExistPincode', '');
+			  localStorage.setItem('storepincode', '');
+			  localStorage.setItem('PinMsg', '');
+			  $('.pincode-validation.product-pins').show();
+			  $('.cstm-msg').hide();
+			  setTimeout(function() {
+				$('.pin_err_msg').show();
+			  }, 2000);
+			}
+		  } else {
+			pin_11.focus().attr('placeholder', 'Invalid PIN').css('color','red'); $('.pincode-1').val('');
+			localStorage.setItem('PinMsg', '');
+			$('.pincode-validation.product-pins').show();
+			localStorage.setItem('ExistPincode', '');
+			localStorage.setItem('storepincode', '');
+			return false;
+		  }
+
+		  $('#loader-spin').show();
+		  setTimeout(function() {
+			$('#loader-spin').hide();
+		  }, 2000);
+
+		  var wrong_pin = $('input.pincode-1').val();
+		  $('.wrong-pin').html('Delivery options for <span style="font-weight: bold;">' + wrong_pin + '</span>');
+
+		  $("input.pincode-1").focus(function(){
+			$('.cstm-msg, .pin_err_msg').hide();
+		  });
+
+		  $('.pin-btn-hide').hide();
+
+		  $('.change-btn').click(function(){
+			$('.pin-btn-hide').show();
+			$('.cstm-msg, .pin_err_msg').hide();
+		  });
+
+		  printCity(pincode_11);
+		});   
+
+		function printCity(pincode) {
+		  $.getJSON(`https://api.postalpincode.in/pincode/${pincode}`, function(data) {
+			if (data[0].Status === 'Success') {
+			  var data_pincodes = data[0].PostOffice[0].Pincode;
+			  var data_country = data[0].PostOffice[0].Country;
+			  var city_new;
+			  if (data[0].PostOffice[0].Block === 'NA') {
+				city_new = data[0].PostOffice[0].District;
+			  } else {
+				city_new = data[0].PostOffice[0].Block;
+			  }
+			  var display_pincode = `${pincode}`;
+			  var city_country = `${city_new}, ${data_country}`;
+			  $('.display-pincode').html('Delivery options for <span style="font-weight: bold;">' + display_pincode + '</span>');
+			  $('.city-country').html('<i class="fas fa-shipping-fast" style="color: #1F6100; font-size: 14px;"></i> Shipping to: <span style="font-weight: bold;">' + city_country + '</span>');
+			} else {
+			  $('.display-pincode').text('Pincode Not Found');
+			  $('.city-country').text('');
+			}
+		  });
+		}
+	  }
+	});
+<!-- Pincode Availability Checker with API To Print Pincode, City & Country with Loader -->
+
+<!-- Delivery Date on Checkout Page (No Need theme.liquid File) -->
+	<!-- Step 1: Layout -> (checkout.liquid) & Paste Below Code -->
+	{% assign days1 = settings.delivery_date_1 | times: 86400 %}
+	{% assign newDate1 = 'now' | date: '%s'| plus: days1 %} 
+	{% assign date1 =  newDate1 | date: '%b %d' %}
+
+	{% assign days2 = settings.delivery_date_2 | times: 86400 %}
+	{% assign newDate2 = 'now' | date: '%s'| plus: days2 %} 
+	{% assign date2 =  newDate2 | date: '%b %d' %}
+
+	{% assign days3 = settings.delivery_date_3 | times: 86400 %}
+	{% assign newDate3 = 'now' | date: '%s'| plus: days3 %} 
+	{% assign date3 =  newDate3 | date: '%b %d' %}
+
+	{% assign days4 = settings.delivery_date_4 | times: 86400 %}
+	{% assign newDate4 = 'now' | date: '%s'| plus: days4 %}
+	{% assign date4 =  newDate4 | date: '%b %d' %}
+
+	<script>
+	  $(document).ready(function(){
+		var pin_list_1 = "{{settings.pincode_list_1}}";
+		pin_list_1 = pin_list_1.split(',');  
+		
+		var pin_list_2 = "{{settings.pincode_list_2}}";
+		pin_list_2 = pin_list_2.split(','); 
+		
+		var pin_list_3 = "{{settings.pincode_list_3}}";
+		pin_list_3 = pin_list_3.split(','); 
+		
+		var pin_list_4 = "{{settings.pincode_list_4}}";
+		pin_list_4 = pin_list_4.split(','); 
+
+		var date1 = '{{ date1 }}';
+		var date2 = '{{ date2 }}';
+		var date3 = '{{ date3 }}';
+		var date4 = '{{ date4 }}';
+
+		function displayMessage(pincode) {
+		  $('.delivery-msg, .delivery-error').remove(); // Remove Existing Messages
+		  
+		  if (/^(\d{6})$/.test(pincode)) {
+			if ($.inArray(pincode, pin_list_1) > -1) {
+			  $('#checkout_shipping_address_zip_custom').after('<p class="delivery-msg" style="font-size: 12px; color: #1F6100; margin-top: 5px;">' + 'Delivery by ' + date1 + '</p>');
+			} else if ($.inArray(pincode, pin_list_2) > -1){
+			  $('#checkout_shipping_address_zip_custom').after('<p class="delivery-msg" style="font-size: 12px; color: #1F6100; margin-top: 5px;">' + 'Delivery by ' + date2 + '</p>');
+			} else if ($.inArray(pincode, pin_list_3) > -1){
+			  $('#checkout_shipping_address_zip_custom').after('<p class="delivery-msg" style="font-size: 12px; color: #1F6100; margin-top: 5px;">' + 'Delivery by ' + date3 + '</p>');
+			} else if ($.inArray(pincode, pin_list_4) > -1){
+			  $('#checkout_shipping_address_zip_custom').after('<p class="delivery-msg" style="font-size: 12px; color: #1F6100; margin-top: 5px;">' + 'Delivery by ' + date4 + '</p>');
+			} else{
+			  $('#checkout_shipping_address_zip_custom').after('<p class="delivery-error" style="font-size: 12px; color: red; margin-top: 5px; line-height: 1.2;">' + 'Apologies, we do not currently service your location. We will be there soon!' + '</p>');
+			}
+		  }
+		}
+		
+		// Get Input Value on Page Load or Refresh
+		var pincodeValue = $('#checkout_shipping_address_zip_custom').val();
+		
+		// Display Message Based on Input Value
+		displayMessage(pincodeValue);
+		
+		// Event Listener for Input Change
+		$('#checkout_shipping_address_zip_custom').on('input', function() {
+		  var pincode = $(this).val();
+		  displayMessage(pincode);
+		});
+	  });
+	</script>
+<!-- Delivery Date on Checkout Page (No Need theme.liquid File) -->
