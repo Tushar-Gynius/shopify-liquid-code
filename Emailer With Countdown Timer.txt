@@ -1,0 +1,6 @@
+<!-- Emailer With Countdown Timer -->
+    <!-- Step 1: Goto Below URL & Register -->
+    (https://www.sendtric.com/)
+
+    <!-- Step 2: Create Your Timer Code & Paste in Your Shopify Emailer -->
+<!-- Emailer With Countdown Timer -->
