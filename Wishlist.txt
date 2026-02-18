@@ -1,0 +1,149 @@
+<!-- Wishlist -->
+	<!-- Step 1: Create Templates (page.wishlist.liquid) & Paste Below Code -->
+	{% section 'wishlist' %}
+
+	<!-- Step 2: Create Sections (wishlist.liquid) & Paste Below Code -->	
+	<div id="wishlist-products">
+	  <h2>{{ page.title }}</h2>
+
+	  <div class="wishlist-items"></div>
+	</div>
+
+	<style>
+	  #wishlist-products h2 {text-align: center;}
+	  .wishlist-items {display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 20px;}
+	  .wishlist-items .list-items img {width: 100%; border-radius: 5px;}
+	  .wishlist-items .list-items h3 {margin: 5px 0; font-size: 16px;}
+	  .wishlist-items .list-items a {text-decoration: none; color: #910f3f;}
+	  .product-price {display: flex; gap: 10px;}
+	  .product-price .product-compare-price {font-size: 14px; text-decoration: line-through; margin: 0;}
+	  .product-price .product-sale-price {font-size: 14px; font-weight: bold; margin: 0;}
+	  .wishlist-button {background: none; border: none; cursor: pointer; position: relative; z-index: 111; padding: 0;}
+
+	  @media (max-width: 768px) {
+		.wishlist-items {grid-template-columns: repeat(2, 1fr);}
+	  }
+	</style>
+	
+	<!-- Step 3: Create Assets (wishlist.js) & Paste Below Code -->	
+	document.addEventListener('DOMContentLoaded', function() {
+	  var wishlistButtons = document.querySelectorAll('.wishlist-button');
+	  
+	  wishlistButtons.forEach(function(button) {
+		button.addEventListener('click', function(event) {
+		  event.preventDefault();
+		  var productId = button.getAttribute('data-product-handle');
+		  var wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+		  
+		  if(wishlist.includes(productId)) {
+			wishlist = wishlist.filter(function(id) {
+			  return id !== productId;
+			});
+		  }else {
+			wishlist.push(productId);
+		  }
+		  
+		  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+		  updateWishlistIcon(button, wishlist.includes(productId));
+		});
+	  });
+
+	  function updateWishlistIcon(button, isInWishlist) {
+		var icon = button.querySelector('.icon-heart');
+		
+		if(isInWishlist) {
+		  icon.style.fill = '#e6007e';
+		}else {
+		  icon.style.fill = '';
+		}
+	  }
+
+	  var wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+	  wishlistButtons.forEach(function(button) {
+		var productId = button.getAttribute('data-product-handle');
+		updateWishlistIcon(button, wishlist.includes(productId));
+	  });
+
+	  // Products on Wishlist Page
+	  window.addEventListener('load', function() { 
+		var URL = window.location.hostname;
+		var wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+		var wishlistContainer = document.querySelector('#wishlist-products .wishlist-items');
+		
+		wishlist.forEach(function(item) {
+		  fetch(`https://${URL}/products/${item}.json`)
+			.then((response) => {
+			  return response.json();
+			})
+			.then((resp) => {
+			  var productImage = resp.product.image.src;
+			  var productTitle = resp.product.title;
+			  var comparePrice = resp.product.variants[0].compare_at_price;
+			  var salePrice = resp.product.variants[0].price;
+			  var listItem = document.createElement('div');
+			  
+			  listItem.classList.add('list-items');
+			  listItem.innerHTML = `
+				<img src="${productImage}" alt="${productTitle}">
+				<h3><a href="https://${URL}/products/${item}">${productTitle}</a></h3>
+				<div class="product-price">
+				  <p class="product-compare-price">${comparePrice}</p>
+				  <p class="product-sale-price">${salePrice}</p>
+				</div>
+				<button class="wishlist-button" data-product-handle="${item}" aria-label="Add To Wishlist">
+				  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="#e6007e" class="icon-heart">
+					<path class="outside" d="M0 16.6172C0 7.78063 7.16344 0.617188 16 0.617188V0.617188C24.8366 0.617188 32 7.78063 32 16.6172V16.6172C32 25.4537 24.8366 32.6172 16 32.6172V32.6172C7.16344 32.6172 0 25.4537 0 16.6172V16.6172Z" fill="white"></path>
+					<path class="inside" d="M12.5 10.6172C10.5673 10.6172 9 12.1083 9 13.948C9 15.4331 9.6125 18.9577 15.6416 22.5206C15.7496 22.5838 15.8736 22.6172 16 22.6172C16.1264 22.6172 16.2504 22.5838 16.3584 22.5206C22.3875 18.9577 23 15.4331 23 13.948C23 12.1083 21.4327 10.6172 19.5 10.6172C17.5673 10.6172 16 12.6359 16 12.6359C16 12.6359 14.4327 10.6172 12.5 10.6172Z" stroke="#e6007e" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+				  </svg>
+				</button>
+			  `;
+			  
+			  wishlistContainer.appendChild(listItem);
+
+			  // Remove Product From Wishlist Page
+			  listItem.querySelector('.wishlist-button').addEventListener('click', function(event) {
+				var productHandle = event.currentTarget.getAttribute('data-product-handle');
+				var index = wishlist.indexOf(productHandle);
+				
+				if(index > -1) {
+				  wishlist.splice(index, 1);
+				  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+				  wishlistContainer.removeChild(listItem);
+				}
+			  });
+			})
+			.catch((error) => {
+			  console.error('Error Fetching Product:', error);
+			});
+		});
+	  });
+	});
+	
+	<!-- Step 4: Layout -> (theme.liquid) & Paste Below Code Before </body> Tag -->
+	<script src="{{ 'wishlist.js' | asset_url }}" defer="defer"></script>
+	
+	<!-- Step 5: Admin -> Pages -> Create Page (Wishlist) & Select Theme Template (wishlist) -->
+	<!-- Step 6: Goto Collection Page File Where You Want To Add Wishlist Icon & Paste Below Code -->
+	<button class="wishlist-button" data-product-handle="{{ card_product.handle }}" aria-label="Add To Wishlist">
+	  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none" class="icon-heart">
+		<path class="outside" d="M0 16.6172C0 7.78063 7.16344 0.617188 16 0.617188V0.617188C24.8366 0.617188 32 7.78063 32 16.6172V16.6172C32 25.4537 24.8366 32.6172 16 32.6172V32.6172C7.16344 32.6172 0 25.4537 0 16.6172V16.6172Z" fill="white"></path>
+		<path class="inside" d="M12.5 10.6172C10.5673 10.6172 9 12.1083 9 13.948C9 15.4331 9.6125 18.9577 15.6416 22.5206C15.7496 22.5838 15.8736 22.6172 16 22.6172C16.1264 22.6172 16.2504 22.5838 16.3584 22.5206C22.3875 18.9577 23 15.4331 23 13.948C23 12.1083 21.4327 10.6172 19.5 10.6172C17.5673 10.6172 16 12.6359 16 12.6359C16 12.6359 14.4327 10.6172 12.5 10.6172Z" stroke="#e6007e" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+	  </svg>
+	</button>
+
+	<style>
+	  .wishlist-button {background: none; border: none; cursor: pointer; position: relative; z-index: 111; padding: 0;}
+	</style>
+			
+	<!-- Step 7: Goto Product Page File Where You Want To Add Wishlist Icon & Paste Below Code -->
+	<button class="wishlist-button" data-product-handle="{{ product.handle }}" aria-label="Add To Wishlist">
+	  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none" class="icon-heart">
+	    <path class="outside" d="M0 16.6172C0 7.78063 7.16344 0.617188 16 0.617188V0.617188C24.8366 0.617188 32 7.78063 32 16.6172V16.6172C32 25.4537 24.8366 32.6172 16 32.6172V32.6172C7.16344 32.6172 0 25.4537 0 16.6172V16.6172Z" fill="white"></path>
+	    <path class="inside" d="M12.5 10.6172C10.5673 10.6172 9 12.1083 9 13.948C9 15.4331 9.6125 18.9577 15.6416 22.5206C15.7496 22.5838 15.8736 22.6172 16 22.6172C16.1264 22.6172 16.2504 22.5838 16.3584 22.5206C22.3875 18.9577 23 15.4331 23 13.948C23 12.1083 21.4327 10.6172 19.5 10.6172C17.5673 10.6172 16 12.6359 16 12.6359C16 12.6359 14.4327 10.6172 12.5 10.6172Z" stroke="#e6007e" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+	  </svg>
+	</button>
+
+	<style>
+	  .wishlist-button {background: none; border: none; cursor: pointer;}
+	</style>
+<!-- Wishlist -->
