@@ -1,0 +1,184 @@
+<!-- Pincode Popup on Click of ATC Button -->
+	<!-- Step 1: Config -> (settings_schema.json) & Add Below Code -->
+	  {
+		"name": "Product Pincode Availability",
+		"settings": [
+		  {
+			"type": "textarea",
+			"id": "pincode_list",
+			"label": "Pincode List"
+		  }
+		]
+	  },
+
+	<!-- Step 2: Create Snippets (product-pincode.liquid) & Paste Below Code -->
+	<script src="{{ 'product-pincode.js' | asset_url }}" defer="defer"></script>
+
+	<div id="pincodePopup" class="pincodePopup" style="display: none;">
+	  <span id="closePopup">
+		{% render 'icon-close' %}
+	  </span>
+	  
+	  <div class="pincodeInfo">
+		<h2>Enter Your Area Pincode/Zipcode For Delivery</h2>
+		<input type="text" id="pincodeInput" placeholder="Enter Pincode">
+		<button id="checkAvailability">Check Availability</button>
+		<p class="availabilityMsg"></p>
+	  </div>
+	</div>
+
+	<style>
+	  .pincodePopup {position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 100%; max-width: 768px; margin: auto; padding: 20px; background: #0e1125; border-radius: 10px;}
+	  .pincodeOverlay {position: fixed; top: 0; left: 0; z-index: 999; width: 100%; height: 100%; background: #01051e; opacity: 0.6;}  
+	  #closePopup {position: absolute; right: 20px;}
+	  #closePopup svg {height: 24px; width: 24px; color: #fff; border: 1px solid #fff; border-radius: 50px; padding: 2px; cursor: pointer;}
+	  .pincodeInfo {padding: 20px 0; text-align: center;}
+	  .pincodeInfo h2 {font-family: playfair display;}
+	  #pincodeInput {padding: 12px; border: none; border-radius: 5px; outline: none; box-shadow: none; min-width: 280px;}
+	  #checkAvailability {border: none; border-radius: 5px; outline: none; box-shadow: none; font-size: 16px; line-height: 16px; font-weight: 700; background: #c8a357; color: #010317; padding: 12px 20px;}
+	  .availabilityMsg {font-size: 12px; font-weight: 600; margin: 5px 0;}
+	  .header__icons .productPincode {text-align: center;}
+	  .pincodeValue {font-size: 14px; font-weight: 600; color: #fff; border-bottom: 1px solid #fff;}
+	  .changePincode {background: #c8a357; border: none; border-radius: 2px; padding: 5px; cursor: pointer;}
+	  
+	 @media screen and (max-width: 768px) {
+		.pincodePopup {width: 90%;}
+		#checkAvailability {margin-top: 10px;}
+	  }
+	</style>
+	
+	<!-- Step 3: Create Assets (product-pincode.js.liquid) & Paste Below Code -->
+	{%- assign pincodeList = settings.pincode_list | strip_newlines | strip | split: ',' -%} 
+
+	document.addEventListener("DOMContentLoaded", function() {
+	  var pincodePopup = document.getElementById('pincodePopup');
+	  var pincodeOverlay = document.createElement('div');
+	  pincodeOverlay.classList.add('pincodeOverlay');
+	  var closePopup = document.getElementById('closePopup');
+	  var pincodeInput = document.getElementById('pincodeInput');
+	  var availabilityMsg = document.querySelector(".availabilityMsg");
+	  var pincodeValue = document.querySelectorAll('.pincodeValue');
+	  var changePincode = document.querySelectorAll('.changePincode');
+	  
+	  window.showPopup = function showPopup() {
+		pincodePopup.style.display = 'block';
+		document.body.appendChild(pincodeOverlay);
+		pincodeOverlay.style.display = 'block';
+		document.body.style.overflow = 'hidden';
+	  }
+	  
+	  function hidePopup() {
+		pincodePopup.style.display = 'none';
+		pincodeOverlay.style.display = 'none';
+		document.body.removeChild(pincodeOverlay);
+		document.body.style.overflow = 'auto';
+	  }
+	  
+	  function getPincode() {
+		return localStorage.getItem('Pincode') || '';
+	  }
+
+	  function setPincode(pincode, available) {
+		if(available) {
+		  localStorage.setItem('Pincode', pincode);
+		}else {
+		  localStorage.removeItem('Pincode');
+		}
+	  }
+
+	  pincodeInput.value = getPincode();
+
+	  pincodeValue.forEach(function(element) {
+		if(pincodeInput.value) {
+		  element.textContent = pincodeInput.value;
+		}else {
+		  element.textContent = 'Pincode';
+		}
+	  });
+
+	  pincodeOverlay.addEventListener('click', hidePopup);    
+	  closePopup.addEventListener('click', hidePopup);
+
+	  var pincodeList = {{ pincodeList | json }};
+	  
+	  pincodeInput.addEventListener('input', function(event) {
+		var inputValue = event.target.value;
+		var removeExtra = inputValue.replace(/\D/g, '');
+		var maxLength = 6; 
+		
+		removeExtra = removeExtra.substring(0, maxLength);
+		event.target.value = removeExtra;
+
+		if(removeExtra.length < maxLength) {
+		  availabilityMsg.textContent = "Enter a Valid Pincode";
+		  availabilityMsg.style.color = "red";
+		}else {
+		  availabilityMsg.textContent = "";
+		}
+
+		if(pincodeList.includes(removeExtra)) {
+		  setPincode(removeExtra, true);
+		}else {
+		  setPincode(removeExtra, false);
+		}
+	  });
+
+	  document.getElementById("checkAvailability").addEventListener("click", function() {
+		var pincode = pincodeInput.value;
+		
+		if(!pincode.match(/^\d{6}$/)) {
+		  availabilityMsg.textContent = "Enter a Valid Pincode";
+		  availabilityMsg.style.color = "red";
+		  return;
+		}
+		
+		var isAvailable = pincodeList.includes(pincode);
+
+		if(isAvailable) {
+		  availabilityMsg.textContent = "Delivery is Available";
+		  availabilityMsg.style.color = "green";
+		}else {
+		  availabilityMsg.textContent = "Delivery is Not Available";
+		  availabilityMsg.style.color = "red";
+		}
+
+		pincodeValue.forEach(function(element) {
+		  if(pincode) {
+			element.textContent = pincode;
+		  }else {
+			element.textContent = 'Pincode';
+		  }
+		});
+
+		setPincode(pincode, isAvailable);
+	  });
+
+	  changePincode.forEach(function(button) {
+		button.addEventListener('click', function() {
+		  showPopup();
+		});
+	  });
+	});
+	
+	<!-- Step 4: Layout -> (theme.liquid) & Paste Below Code Just After {% section 'header' %} -->
+	{% render 'product-pincode' %}
+	
+	<!-- Step 5: Sections -> (header.liquid) & Paste Below Code Where You Want -->
+	<div class="productPincode">
+	  <span class="pincodeValue">Pincode</span>
+	  <button class="changePincode">Change</button>
+	</div>
+
+	<!-- Step 6: Sections -> (main-product.liquid) & Paste Below Code Where You Want -->
+	<div class="productPincode">
+	  <span class="pincodeValue">Pincode</span>
+	  <button class="changePincode">Change</button>
+	</div>
+	
+	<!-- Step 7: Assets -> (product-form.js) & Paste Below Code Just After onSubmitHandler(evt) (Dawn Theme) -->
+	const pincode = localStorage.getItem('Pincode');
+	if(!pincode) {
+	  window.showPopup();
+	  return;
+	}
+<!-- Pincode Popup on Click of ATC Button -->
