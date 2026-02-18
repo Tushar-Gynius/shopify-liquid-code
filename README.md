@@ -1,2 +1,2 @@
 # shopify-liquid-code
-Shopify Liquid - Small Logic Code
+Shopify Liquid – Custom Logic Implementation Guide
